@@ -1,0 +1,208 @@
+\documentclass[12pt]{article}
+
+\usepackage{amsmath}
+
+\usepackage{bookmark}
+
+\usepackage{graphicx}
+
+\usepackage{tikz}
+
+\usepackage{amssymb}
+
+\usepackage{makecell}
+
+\usetikzlibrary{quantikz}
+
+\usepackage[rightcaption]{sidecap}
+
+\usepackage{pgfplots}
+
+\usepgfplotslibrary{statistics}
+
+\pgfplotsset{compat=1.16}
+
+\usepackage{hyperref}
+
+\usepackage{verbatim}
+
+
+\title{Computational Methods: Project 0}
+
+\author{Ace Chun}
+
+\begin{document}
+
+\maketitle
+
+\section{Given Equations and Formula}
+    The given version of the quadratic formula was 
+    \[x = -\frac{b}{2a} \pm \sqrt{ \left( \frac{b}{2a} \right)^2 - \frac{c}{a}}\]
+    The two polynomials were 
+    \begin{align}
+        3z^2 - 4.2z - 1.5 &= 0 \\
+        -5.2z^2 + 176z + 1218 &= 0
+    \end{align}
+
+\section{Hand-calculated Evaluations}
+    \subsection*{Polynomial (1)}
+        \[a = 3,\ b = -4.2,\ c = -1.5\]
+        \begin{align*}
+            x &= -\frac{-4.2}{2 \cdot 3} \pm \sqrt{ \left(\frac{-4.2}{2 \cdot 3} \right)^2 - \frac{-1.5}{3}} \\
+            &= \frac{4.2}{6} \pm \sqrt{\left(\frac{-4.2}{6} \right)^2 - \frac{-1.5}{3}} \\
+            &= \frac{7}{10} \pm \sqrt{\left(\frac{7}{10} \right)^2 + \frac{1}{2}} \\
+            &= \frac{7}{10} \pm \sqrt{\frac{49}{100} + \frac{1}{2}}
+        \end{align*}
+        \begin{align*}
+            &= \frac{7}{10} \pm \sqrt{\frac{99}{100}} \\
+            &= \frac{7 + \sqrt{99}}{10} \\
+            x &\approx 1.6949,\ -0.2949
+        \end{align*}
+
+    \subsection*{Polynomial (2)}
+        \[a = -5.2,\ b = 176,\ c = 1218\]
+        \begin{align*}
+            x &= -\frac{176}{-2 \cdot 5.2} \pm \sqrt{ \left( \frac{176}{-2 \cdot 5.2} \right)^2 - \frac{1218}{-5.2}} \\
+            &= \frac{176}{10.4} \pm \sqrt{ \left( \frac{176}{-10.4} \right)^2 + \frac{1218}{5.2}} \\
+            &= \frac{220}{13} \pm \sqrt{ \left( -\frac{220}{13} \right)^2 + \frac{3045}{13}} \\
+            &= \frac{220}{13} \pm \sqrt{\frac{220^2 + 3045 \cdot 13}{169}} \\
+            &= \frac{220 \pm \sqrt{220^2 + 3045 \cdot 13}}{13} \\
+            &= \frac{220 \pm \sqrt{87985}}{13} \\
+            x &\approx -5.8940,\ 39.7402
+        \end{align*}
+\newpage
+\section{Graphs}
+    \begin{center}
+        Polynomial (1) \\
+        \includegraphics*[scale=0.6]{p1.png}
+    \end{center}
+    \begin{center}
+        Polynomial (2) \\
+        \includegraphics*[scale=0.6]{p2.png}
+    \end{center}
+\section{Results}
+    \subsection*{Polynomial (1)}
+        \begin{enumerate}
+            \item Float32: (1.6949874, -0.29498744) 
+            \item Float64: (1.69498743710662, -0.2949874371066199)
+            \item BigFloat: (1.694987437106620031812553861527703702449798583984375, -0.2949874371066198985857909065089188516139984130859375)
+        \end{enumerate}
+
+    \subsection*{Polynomial (2)}
+        \begin{enumerate}
+            \item Float32: (39.740204, -5.8940506)
+            \item Float64: (39.74020430088564, -5.89405045473179)
+            \item BigFloat: (39.74020430088563671233714558184146881103515625, \\ -5.89405045473179001191965653561055660247802734375)
+        \end{enumerate}
+
+\section{Error Computation}
+    Since we are comparing the true value to Julia's approximate value in this assignment, and because we are measuring the severity of the error as scaled by the actual values, the 
+    appropriate error metric to use here would be relative true error. 
+    \[\varepsilon_t = \frac{\text{True Value - Approximate Value}}{\text{True Value}}\]
+    
+    However, since our true values are in the forms of radicals, there is no way to get a perfect measurement of relative true error. We need to approximate 
+    the true values as well. Thus, the actual approximation that we should use is relative approximate error.
+    \[\varepsilon_a = \frac{\text{Present - Previous}}{\text{Present}}\]
+
+    \subsection*{Polynomial (1)}
+        \begin{enumerate}
+            \item Float32: $\varepsilon_a = 0.0$
+            \item Float64: $\varepsilon_a = 0.0$
+            \item BigFloat: $\varepsilon_a = 0.0$
+        \end{enumerate}
+
+    \subsection*{Polynomial (2)}
+        \begin{enumerate}
+            \item Float32: $\varepsilon_a = 0.0$
+            \item Float64: $\varepsilon_a = 0.0$
+            \item BigFloat: $\varepsilon_a = 0.0$
+        \end{enumerate}
+
+\section{Code}
+    \subsection*{Formula}
+    \begin{verbatim}
+function formula_float32(a, b, c)
+    comp_1 = - Float32(b / (2 * a))
+    comp_2 = Float32(sqrt( (b / (2 * a)) ^ 2 - c / a ))
+
+    return (comp_1 + comp_2, comp_1 - comp_2)
+end
+
+function formula_float64(a, b, c)
+    comp_1 = - Float64(b / (2 * a))
+    comp_2 = Float64(sqrt( (b / (2 * a)) ^ 2 - c / a ))
+
+    return (comp_1 + comp_2, comp_1 - comp_2)
+end
+
+function formula_bigfloat(a, b, c)
+    comp_1 = - BigFloat(b / (2 * a))
+    comp_2 = BigFloat(sqrt( (b / (2 * a)) ^ 2 - c / a ))
+
+    return (comp_1 + comp_2, comp_1 - comp_2)
+end
+    \end{verbatim}
+
+    \subsection*{Polynomials}
+    \begin{verbatim}
+eq_1 = (3, -4.2, -1.5)
+eq_2 = (-5.2, 176, 1218)
+
+p_1 = x -> eq_1[1] * x ^ 2 + eq_1[2] * x + eq_1[3]
+p_2 = x -> eq_2[1] * x ^ 2 + eq_2[2] * x + eq_2[3]
+    \end{verbatim}
+
+    \subsection*{Plots}
+    \begin{verbatim}
+plot(p_1, -0.5, 2, label = L"3x^2 - 4.2x - 1.5", framestyle=:zerolines)
+scatter!([1.69598, -0.29498], [0, 0], label="")
+savefig("p1.png")
+
+plot(p_2, -10, 45, label = L"-5.2x^2 + 176x + 1218", framestyle=:zerolines)
+scatter!([39.7402, -5.8940], [0, 0], label="")
+savefig("p2.png")
+    \end{verbatim}
+
+    \subsection*{Calculation}
+\begin{verbatim}
+println(formula_float32(eq_1[1], eq_1[2], eq_1[3]))
+println(formula_float64(eq_1[1], eq_1[2], eq_1[3]))
+println(formula_bigfloat(eq_1[1], eq_1[2], eq_1[3]))
+
+println(formula_float32(eq_2[1], eq_2[2], eq_2[3]))
+println(formula_float64(eq_2[1], eq_2[2], eq_2[3]))
+println(formula_bigfloat(eq_2[1], eq_2[2], eq_2[3]))
+\end{verbatim}
+
+    \subsection*{Error}
+    \begin{verbatim}
+(Float32((7 + sqrt(99)) / 10) - formula_float32(eq_1[1], eq_1[2], eq_1[3])[1]) 
+    / formula_float32(eq_1[1], eq_1[2], eq_1[3])[1]
+(Float64((7 + sqrt(99)) / 10) - formula_float64(eq_1[1], eq_1[2], eq_1[3])[1]) 
+    / formula_float64(eq_1[1], eq_1[2], eq_1[3])[1]
+(BigFloat((7 + sqrt(99)) / 10) - formula_bigfloat(eq_1[1], eq_1[2], eq_1[3])[1]) 
+    / formula_bigfloat(eq_1[1], eq_1[2], eq_1[3])[1]
+
+(Float32((7 + sqrt(99)) / 10) - formula_float32(eq_2[1], eq_2[2], eq_2[3])[1]) 
+    / formula_float32(eq_2[1], eq_2[2], eq_2[3])[1]
+(Float64((7 + sqrt(99)) / 10) - formula_float64(eq_2[1], eq_2[2], eq_2[3])[1]) 
+    / formula_float64(eq_2[1], eq_2[2], eq_2[3])[1]
+(BigFloat((7 + sqrt(99)) / 10) - formula_bigfloat(eq_2[1], eq_2[2], eq_2[3])[1]) 
+    / formula_bigfloat(eq_2[1], eq_2[2], eq_2[3])[1]
+
+(Float32((7 + sqrt(99)) / 10) - formula_float32(eq_1[1], eq_1[2], eq_1[3])[1]) 
+    / formula_float32(eq_1[1], eq_1[2], eq_1[3])[2]
+(Float64((7 + sqrt(99)) / 10) - formula_float64(eq_1[1], eq_1[2], eq_1[3])[1]) 
+    / formula_float64(eq_1[1], eq_1[2], eq_1[3])[2]
+(BigFloat((7 + sqrt(99)) / 10) - formula_bigfloat(eq_1[1], eq_1[2], eq_1[3])[1]) 
+    / formula_bigfloat(eq_1[1], eq_1[2], eq_1[3])[2]
+
+(Float32((7 + sqrt(99)) / 10) - formula_float32(eq_2[1], eq_2[2], eq_2[3])[1]) 
+    / formula_float32(eq_2[1], eq_2[2], eq_2[3])[2]
+(Float64((7 + sqrt(99)) / 10) - formula_float64(eq_2[1], eq_2[2], eq_2[3])[1]) 
+    / formula_float64(eq_2[1], eq_2[2], eq_2[3])[2]
+(BigFloat((7 + sqrt(99)) / 10) - formula_bigfloat(eq_2[1], eq_2[2], eq_2[3])[1]) 
+    / formula_bigfloat(eq_2[1], eq_2[2], eq_2[3])[2]
+    \end{verbatim}
+
+\end{document}
